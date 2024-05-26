@@ -4,21 +4,24 @@
   <title>Countdown Timer</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
+      background-color: #0b0c10;
+      color: #c5c6c7;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f0f0f0;
       flex-direction: column;
+      margin: 0;
     }
     #timer-container {
       display: flex;
       align-items: center;
+      flex-direction: column;
     }
     #timer {
       font-size: 2em;
-      margin-left: 20px;
+      margin: 20px 0;
     }
     #controls {
       margin-top: 20px;
@@ -28,6 +31,13 @@
       font-size: 1em;
       margin: 5px;
       cursor: pointer;
+      background-color: #1f2833;
+      color: #c5c6c7;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a29e;
     }
     .pulse {
       animation: pulse-animation 1s infinite;
@@ -37,25 +47,72 @@
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-    .stopwatch {
-      width: 50px;
-      height: 50px;
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/73/Stopwatch_icon.svg');
-      background-size: contain;
-      background-repeat: no-repeat;
+    .clock {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      border: 8px solid #c5c6c7;
+      border-radius: 50%;
+      background-color: #1f2833;
+    }
+    .hand {
+      position: absolute;
+      width: 50%;
+      height: 2px;
+      background-color: #c5c6c7;
+      transform-origin: 100%;
+      left: 50%;
+      top: 50%;
+    }
+    .second-hand {
+      height: 1px;
+      background-color: #66fcf1;
+    }
+    #updates {
+      width: 80%;
+      max-width: 600px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    .update {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #c5c6c7;
+      padding-bottom: 5px;
+    }
+    a {
+      color: #66fcf1;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #c5c6c7;
     }
   </style>
 </head>
 <body>
   <div id="timer-container">
-    <div class="stopwatch" id="stopwatch"></div>
+    <div class="clock">
+      <div class="hand second-hand" id="second-hand"></div>
+    </div>
     <div id="timer">15:00</div>
+    <div id="controls">
+      <button onclick="startTimer()">Start</button>
+      <button onclick="stopTimer()">Stop</button>
+      <button onclick="togglePulse()">Toggle Pulse</button>
+    </div>
+    <div id="updates">
+      <h3>Latest Updates</h3>
+      <div id="update-feed"></div>
+      <a href="https://robertsspaceindustries.com" target="_blank">Visit RSI Site</a>
+    </div>
   </div>
-  <div id="controls">
-    <button onclick="startTimer()">Start</button>
-    <button onclick="stopTimer()">Stop</button>
-    <button onclick="togglePulse()">Toggle Pulse</button>
-  </div>
+  <footer>
+    This site is not affiliated with <a href="https://robertsspaceindustries.com" target="_blank">https://robertsspaceindustries.com</a> or Cloud Imperium Games.
+  </footer>
 
   <script>
     var countdownInterval;
@@ -71,17 +128,20 @@
 
     function updateTimer() {
       document.getElementById('timer').innerText = formatTime(remainingTime);
-      var stopwatch = document.getElementById('stopwatch');
+      var stopwatch = document.getElementById('second-hand');
       if (remainingTime > 0) {
         remainingTime--;
       } else {
         remainingTime = countdownTime;
       }
 
+      var degrees = ((15 * 60 - remainingTime) / (15 * 60)) * 360;
+      stopwatch.style.transform = `rotate(${degrees}deg)`;
+
       if (pulseEnabled && remainingTime <= 30) {
-        stopwatch.classList.add('pulse');
+        document.querySelector('.clock').classList.add('pulse');
       } else {
-        stopwatch.classList.remove('pulse');
+        document.querySelector('.clock').classList.remove('pulse');
       }
     }
 
@@ -97,12 +157,32 @@
       countdownInterval = null;
       remainingTime = countdownTime;
       document.getElementById('timer').innerText = formatTime(countdownTime);
-      document.getElementById('stopwatch').classList.remove('pulse');
+      document.getElementById('second-hand').style.transform = 'rotate(0deg)';
+      document.querySelector('.clock').classList.remove('pulse');
     }
 
     function togglePulse() {
       pulseEnabled = !pulseEnabled;
     }
+
+    // Fetch the latest updates from RSI (simulated here)
+    function fetchUpdates() {
+      var updates = [
+        { title: 'New Ship Launched', link: 'https://robertsspaceindustries.com/comm-link/transmission/18112-New-Ship-Launched' },
+        { title: 'Monthly Report', link: 'https://robertsspaceindustries.com/comm-link/transmission/18110-Monthly-Report' },
+        { title: 'Patch Update', link: 'https://robertsspaceindustries.com/comm-link/transmission/18108-Patch-Update' }
+      ];
+
+      var updateFeed = document.getElementById('update-feed');
+      updates.forEach(update => {
+        var updateElement = document.createElement('div');
+        updateElement.className = 'update';
+        updateElement.innerHTML = `<a href="${update.link}" target="_blank">${update.title}</a>`;
+        updateFeed.appendChild(updateElement);
+      });
+    }
+
+    fetchUpdates();
   </script>
 </body>
 </html>
