@@ -13,11 +13,21 @@
       height: 100vh;
       flex-direction: column;
       margin: 0;
+      background-image: url('images/milky-way-1845068_1920.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(0, 0, 0, 0.5); /* Black overlay with 50% transparency */
     }
     #timer-container {
       display: flex;
       align-items: center;
       flex-direction: column;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
     }
     #timer {
       font-size: 2em;
@@ -25,6 +35,7 @@
     }
     #controls {
       margin-top: 20px;
+      text-align: center;
     }
     button {
       padding: 10px 20px;
@@ -35,6 +46,7 @@
       color: #c5c6c7;
       border: none;
       border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     button:hover {
       background-color: #45a29e;
@@ -54,6 +66,7 @@
       border: 8px solid #c5c6c7;
       border-radius: 50%;
       background-color: #1f2833;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
     .hand {
       position: absolute;
@@ -65,14 +78,22 @@
       top: 50%;
     }
     .second-hand {
-      height: 1px;
+      height: 2px;
       background-color: #66fcf1;
+    }
+    .tenths-hand {
+      height: 1px;
+      background-color: #ffcc00;
     }
     #updates {
       width: 80%;
       max-width: 600px;
       margin-top: 20px;
       text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 10px;
     }
     .update {
       margin-bottom: 10px;
@@ -91,18 +112,63 @@
       font-size: 0.8em;
       color: #c5c6c7;
     }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #66fcf1;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
   </style>
 </head>
 <body>
   <div id="timer-container">
     <div class="clock">
       <div class="hand second-hand" id="second-hand"></div>
+      <div class="hand tenths-hand" id="tenths-hand"></div>
     </div>
-    <div id="timer">15:00</div>
+    <div id="timer">15:00.0</div>
     <div id="controls">
       <button onclick="startTimer()">Start</button>
       <button onclick="stopTimer()">Stop</button>
-      <button onclick="togglePulse()">Toggle Pulse</button>
+      <button onclick="enterCustomTime()">Enter Custom Time</button>
+      <label class="switch">
+        <input type="checkbox" id="togglePulse" onclick="togglePulse()">
+        <span class="slider"></span>
+      </label>
+      <span>Toggle Pulse</span>
     </div>
     <div id="updates">
       <h3>Latest Updates</h3>
@@ -116,29 +182,34 @@
 
   <script>
     var countdownInterval;
-    var countdownTime = 15 * 60; // 15 minutes in seconds
+    var countdownTime = 15 * 60 * 10; // 15 minutes in tenths of a second
     var remainingTime = countdownTime;
     var pulseEnabled = false;
 
-    function formatTime(seconds) {
+    function formatTime(tenths) {
+      var seconds = Math.floor(tenths / 10);
+      var tenthsOfSecond = tenths % 10;
       var minutes = Math.floor(seconds / 60);
       var remainingSeconds = seconds % 60;
-      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}.${tenthsOfSecond}`;
     }
 
     function updateTimer() {
       document.getElementById('timer').innerText = formatTime(remainingTime);
-      var stopwatch = document.getElementById('second-hand');
+      var secondHand = document.getElementById('second-hand');
+      var tenthsHand = document.getElementById('tenths-hand');
       if (remainingTime > 0) {
         remainingTime--;
       } else {
         remainingTime = countdownTime;
       }
 
-      var degrees = ((15 * 60 - remainingTime) / (15 * 60)) * 360;
-      stopwatch.style.transform = `rotate(${degrees}deg)`;
+      var secondDegrees = ((countdownTime - remainingTime) % 600) / 600 * 360;
+      var tenthsDegrees = ((countdownTime - remainingTime) % 10) / 10 * 360;
+      secondHand.style.transform = `rotate(${secondDegrees}deg)`;
+      tenthsHand.style.transform = `rotate(${tenthsDegrees}deg)`;
 
-      if (pulseEnabled && remainingTime <= 30) {
+      if (pulseEnabled && remainingTime <= 300) { // Last 30 seconds in tenths
         document.querySelector('.clock').classList.add('pulse');
       } else {
         document.querySelector('.clock').classList.remove('pulse');
@@ -149,7 +220,7 @@
       if (countdownInterval) {
         clearInterval(countdownInterval);
       }
-      countdownInterval = setInterval(updateTimer, 1000);
+      countdownInterval = setInterval(updateTimer, 100);
     }
 
     function stopTimer() {
@@ -158,31 +229,17 @@
       remainingTime = countdownTime;
       document.getElementById('timer').innerText = formatTime(countdownTime);
       document.getElementById('second-hand').style.transform = 'rotate(0deg)';
+      document.getElementById('tenths-hand').style.transform = 'rotate(0deg)';
       document.querySelector('.clock').classList.remove('pulse');
     }
 
     function togglePulse() {
-      pulseEnabled = !pulseEnabled;
+      pulseEnabled = document.getElementById('togglePulse').checked;
     }
 
-    // Fetch the latest updates from RSI (simulated here)
-    function fetchUpdates() {
-      var updates = [
-        { title: 'Star Citizen News', link: 'https://robertsspaceindustries.com/comm-link' },
-        { title: 'See the latest Patch Notes', link: 'https://robertsspaceindustries.com/patch-notes' },
-        { title: 'RoadMap Updates', link: 'https://robertsspaceindustries.com/roadmap/release-view' }
-      ];
-
-      var updateFeed = document.getElementById('update-feed');
-      updates.forEach(update => {
-        var updateElement = document.createElement('div');
-        updateElement.className = 'update';
-        updateElement.innerHTML = `<a href="${update.link}" target="_blank">${update.title}</a>`;
-        updateFeed.appendChild(updateElement);
-      });
-    }
-
-    fetchUpdates();
-  </script>
-</body>
-</html>
+    function enterCustomTime() {
+      var customTime = prompt("Enter custom time in minutes (up to 60):");
+      if (customTime !== null) {
+        var customTimeInTenths = parseInt(customTime) * 60 * 10;
+        if (!isNaN(customTimeInTenths) && customTimeInTenths > 0 && customTimeInTenths <= 60 * 60 * 10) {
+          countdownTime = customTime
