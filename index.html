@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Countdown Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -28,10 +29,12 @@
       padding: 20px;
       background-color: rgba(0, 0, 0, 0.7);
       border-radius: 10px;
+      max-width: 90%;
     }
     #timer {
       font-size: 2em;
       margin: 20px 0;
+      text-align: center;
     }
     #controls {
       margin-top: 20px;
@@ -67,6 +70,7 @@
       border-radius: 50%;
       background-color: #1f2833;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
     }
     .hand {
       position: absolute;
@@ -76,6 +80,7 @@
       transform-origin: 100%;
       left: 50%;
       top: 50%;
+      transform: rotate(90deg);
     }
     .second-hand {
       height: 2px;
@@ -86,7 +91,7 @@
       background-color: #ffcc00;
     }
     #updates {
-      width: 80%;
+      width: 100%;
       max-width: 600px;
       margin-top: 20px;
       text-align: left;
@@ -153,6 +158,21 @@
     input:checked + .slider:before {
       transform: translateX(26px);
     }
+
+    @media (max-width: 600px) {
+      #timer {
+        font-size: 1.5em;
+      }
+      .clock {
+        width: 100px;
+        height: 100px;
+        border-width: 6px;
+      }
+      .hand {
+        width: 40%;
+        height: 2px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -173,17 +193,20 @@
       <span>Toggle Pulse</span>
     </div>
     <div id="updates">
-      <h3>Latest Updates</h3>
+      <h3><b>Useful Links</b></h3>
       <div id="update-feed">
-        <div class="update">Update 1: New ship released</div>
-        <div class="update">Update 2: Alpha 3.13 patch notes</div>
-        <div class="update">Update 3: Free Fly event</div>
+        <A HREF="https://robertsspaceindustries.com/comm-link" target="_blank"><div class="update">Latest News out of Star Citizen</div></A>
+        <A HREF="https://robertsspaceindustries.com/patch-notes" target="_blank"><div class="update">Patch Notes</div></A>
+        <A HREF="https://support.robertsspaceindustries.com/hc/en-us/sections/203695537-Pledges-Packages-and-Ships" target="_blank"><div class="update">RSI Knowledge Base</div></A>
+        <A HREF="https://www.erkul.games/live/calculator" target="_blank"><div class="update">Erkul DPS Calculator</div></A>
+        <A HREF="https://uexcorp.space/" target="_blank"><div class="update">UEX Space Trade Routes</div></A>
+        <A HREF="https://finder.cstone.space/" target="_blank"><div class="update">CStone Item Finder</div></A>
       </div>
-      <a href="https://robertsspaceindustries.com" target="_blank">Visit RSI Site</a>
+      <a href="https://robertsspaceindustries.com" target="_blank">Visit Roberts Space Industries</a>
     </div>
   </div>
   <footer>
-    This site is not affiliated with <a href="https://robertsspaceindustries.com" target="_blank">https://robertsspaceindustries.com</a> or Cloud Imperium Games.
+    This site is not affiliated with, sponsored by, or associated with <a href="https://robertsspaceindustries.com" target="_blank">Roberts Space Industries</a> or <A HREF="https://cloudimperiumgames.com/" target="_blank">Cloud Imperium</A>.
   </footer>
 
   <script>
@@ -233,31 +256,4 @@
       clearInterval(countdownInterval);
       countdownInterval = null;
       remainingTime = countdownTime;
-      document.getElementById('timer').innerText = formatTime(countdownTime);
-      document.getElementById('second-hand').style.transform = 'rotate(0deg)';
-      document.getElementById('tenths-hand').style.transform = 'rotate(0deg)';
-      document.querySelector('.clock').classList.remove('pulse');
-    }
-
-    function togglePulse() {
-      pulseEnabled = document.getElementById('togglePulse').checked;
-    }
-
-    function enterCustomTime() {
-      var customTime = prompt("Enter custom time in minutes (up to 60):");
-      if (customTime !== null) {
-        var customTimeInTenths = parseInt(customTime) * 60 * 10;
-        if (!isNaN(customTimeInTenths) && customTimeInTenths > 0 && customTimeInTenths <= 60 * 60 * 10) {
-          countdownTime = customTimeInTenths;
-          remainingTime = countdownTime;
-          document.getElementById('timer').innerText = formatTime(countdownTime);
-          document.getElementById('second-hand').style.transform = 'rotate(0deg)';
-          document.getElementById('tenths-hand').style.transform = 'rotate(0deg)';
-        } else {
-          alert("Please enter a valid number between 1 and 60.");
-        }
-      }
-    }
-  </script>
-</body>
-</html>
+      document
