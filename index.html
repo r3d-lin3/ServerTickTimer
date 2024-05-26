@@ -256,4 +256,31 @@
       clearInterval(countdownInterval);
       countdownInterval = null;
       remainingTime = countdownTime;
-      document
+      document.getElementById('timer').innerText = formatTime(countdownTime);
+      document.getElementById('second-hand').style.transform = 'rotate(0deg)';
+      document.getElementById('tenths-hand').style.transform = 'rotate(0deg)';
+      document.querySelector('.clock').classList.remove('pulse');
+    }
+
+    function togglePulse() {
+      pulseEnabled = document.getElementById('togglePulse').checked;
+    }
+
+    function enterCustomTime() {
+      var customTime = prompt("Enter custom time in minutes (up to 60):");
+      if (customTime !== null) {
+        var customTimeInTenths = parseInt(customTime) * 60 * 10;
+        if (!isNaN(customTimeInTenths) && customTimeInTenths > 0 && customTimeInTenths <= 60 * 60 * 10) {
+          countdownTime = customTimeInTenths;
+          remainingTime = countdownTime;
+          document.getElementById('timer').innerText = formatTime(countdownTime);
+          document.getElementById('second-hand').style.transform = 'rotate(0deg)';
+          document.getElementById('tenths-hand').style.transform = 'rotate(0deg)';
+        } else {
+          alert("Please enter a valid number between 1 and 60.");
+        }
+      }
+    }
+  </script>
+</body>
+</html>
