@@ -1,0 +1,5 @@
+This is just something I'm throwing together to attempt to give players of Star Citizen a way of tracking the time a server may be refreshing (Server Tick).  
+
+This is in no way connecting to SC server and is not affiliated with Star Citizen, CIG, or any employees of it or any affiliates.
+
+This is purely experimental!  For Science!
