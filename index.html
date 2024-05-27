@@ -198,6 +198,13 @@
         <span class="slider"></span>
       </label>
       <span>Toggle Pulse</span>
+        <label class="switch">
+    <input type="checkbox" id="toggleSoundBtn" onchange="toggleSound()">
+    <span class="slider"></span>
+  </label>
+  <label for="toggleSoundBtn">Toggle Sound</label>
+
+  <script src="script.js"></script>
     </div>
     <div id="updates">
       <center>
@@ -238,27 +245,35 @@
       return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}.${tenthsOfSecond}`;
     }
 
-    function updateTimer() {
-      document.getElementById('timer').innerText = formatTime(remainingTime);
-      var secondHand = document.getElementById('second-hand');
-      var tenthsHand = document.getElementById('tenths-hand');
-      if (remainingTime > 0) {
-        remainingTime--;
-      } else {
-        remainingTime = countdownTime;
-      }
-
+  function updateTimer() {
+    document.getElementById('timer').innerText = formatTime(remainingTime);
+    var secondHand = document.getElementById('second-hand');
+    var tenthsHand = document.getElementById('tenths-hand');
+    
+    if (remainingTime > 0) {
+      remainingTime--;
+      
+      // Calculate degrees for clock hands
       var secondDegrees = ((countdownTime - remainingTime) % 600) / 600 * 360;
       var tenthsDegrees = ((countdownTime - remainingTime) % 10) / 10 * 360;
       secondHand.style.transform = `rotate(${secondDegrees}deg)`;
       tenthsHand.style.transform = `rotate(${tenthsDegrees}deg)`;
 
-      if (pulseEnabled && remainingTime <= 300) { // Last 30 seconds in tenths
+      // Check if remaining time is within the last 5 seconds
+      if (remainingTime <= 50 && soundEnabled) {
+        playBeep();
+      }
+
+      // Add pulse animation if enabled and within the last 30 seconds
+      if (pulseEnabled && remainingTime <= 300) {
         document.querySelector('.clock').classList.add('pulse');
       } else {
         document.querySelector('.clock').classList.remove('pulse');
       }
+    } else {
+      remainingTime = countdownTime;
     }
+  }
 
     function startTimer() {
       if (countdownInterval) {
@@ -296,6 +311,25 @@
         }
       }
     }
+    var soundEnabled = true; // Initially sound is enabled
+
+  function toggleSound() {
+    soundEnabled = !soundEnabled; // Toggle sound state
+    var toggleSoundBtn = document.getElementById('toggleSoundBtn');
+    toggleSoundBtn.innerText = soundEnabled ? "Disable Sound" : "Enable Sound";
+  }
+
+
+function playBeep() {
+  if (soundEnabled) {
+    var beep = new Audio('beep.wav');  
+    beep.play();
+    setTimeout(function() {
+      beep.pause();
+      beep.currentTime = 0;  // Reset the beep sound
+    }, 1000);  // 1000 ms duration for the beep sound (1 second)
+  }
+}
   </script>
 </body>
 </html>
